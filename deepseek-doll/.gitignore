@@ -1,0 +1,3 @@
+# 源码目录：node_modules 与打包产物不入库
+node_modules/
+dist-build/
