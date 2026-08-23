@@ -8,3 +8,12 @@ dist-build/
 # 中间产物
 concept-design/
 raw-videos/
+pr/
+step02/
+step03/
+step04/
+
+# 工具
+.vscode/
+.idea/
+.tools/
