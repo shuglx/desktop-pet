@@ -26,8 +26,8 @@ jobs:
           - { os: windows-latest, name: win-x64,     build: '--win portable --x64',  ext: exe }
           # Linux arm64 deb 安装包 —— Linux 上交叉构建（electron 提供预编译 arm64 二进制）
           - { os: ubuntu-latest,  name: linux-arm64, build: '--linux deb --arm64',   ext: deb }
-          # macOS Intel(x64) DMG 安装包 —— macOS 13 (Intel) runner 上构建（出装包必须用 macOS 宿主）
-          - { os: macos-13,       name: mac-x64,     build: '--mac dmg --x64',       ext: dmg }
+          # macOS Intel(x64) DMG 安装包 —— macOS 15 Intel runner（macos-13 已被 GitHub 停用）
+          - { os: macos-15-intel, name: mac-x64,     build: '--mac dmg --x64',       ext: dmg }
     defaults:
       run:
         working-directory: deepseek-doll
