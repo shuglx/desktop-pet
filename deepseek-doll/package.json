@@ -6,6 +6,7 @@
     "name": "shuglx",
     "email": "jxdalang@163.com"
   },
+  "homepage": "https://github.com/shuglx/desktop-pet",
   "main": "main.js",
   "license": "MIT",
   "scripts": {
