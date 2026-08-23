@@ -2,12 +2,17 @@
   "name": "deepseek-doll",
   "version": "1.0.1",
   "description": "DeepSeek Doll 独立桌宠",
+  "author": {
+    "name": "shuglx",
+    "email": "jxdalang@163.com"
+  },
   "main": "main.js",
   "license": "MIT",
   "scripts": {
     "start": "electron .",
     "dist:win": "electron-builder --win portable",
-    "dist:linux": "electron-builder --linux AppImage"
+    "dist:linux": "electron-builder --linux deb",
+    "dist:mac": "electron-builder --mac dmg"
   },
   "build": {
     "appId": "com.deepseekdoll.desktop-pet",
@@ -31,11 +36,19 @@
     },
     "linux": {
       "target": [
-        "AppImage"
+        "deb"
       ],
       "artifactName": "deepseek-doll-${version}-${arch}.${ext}",
       "icon": "build/icon.png",
-      "category": "Utility"
+      "category": "Utility",
+      "maintainer": "shuglx <jxdalang@163.com>"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "artifactName": "deepseek-doll-${version}-${arch}.${ext}",
+      "category": "public.app-category.utilities"
     }
   },
   "devDependencies": {

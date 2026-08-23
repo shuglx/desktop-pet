@@ -1,13 +1,14 @@
 name: 构建桌宠发布包
 
 # 触发条件：
-#  - 推送到 master：构建两个平台的安装包，作为 Actions 构件存档
-#  - 推送 v* 标签（如 v1.0.1）：额外自动创建 GitHub Release 并附带安装包
+#  - 推送到 master：构建三个平台的安装包，作为 Actions 构件存档
+#  - 推送 deepseek-doll-v* 标签（如 deepseek-doll-v1.0.1）：额外自动创建 GitHub Release 并附带安装包
+#    （标签带桌宠名前缀，后续多个桌宠共存时可各自打自己的发布标签）
 #  - 手动触发：Action 页面点 “Run workflow”
 on:
   push:
     branches: [master]
-    tags: ['v*']
+    tags: ['deepseek-doll-v*']
   workflow_dispatch:
 
 permissions:
@@ -21,14 +22,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Windows x64 便携版 —— 在 Windows 官方 runner 上原生构建
-          - os: windows-latest
-            name: win-x64
-            build: '--win portable --x64'
-          # Linux arm64 (AppImage) —— 在 Linux 上交叉构建（electron 提供预编译 arm64 二进制）
-          - os: ubuntu-latest
-            name: linux-arm64
-            build: '--linux AppImage --arm64'
+          # Windows x64 便携版（单文件 exe，可直接运行）—— Windows 官方 runner 原生构建
+          - { os: windows-latest, name: win-x64,     build: '--win portable --x64',  ext: exe }
+          # Linux arm64 deb 安装包 —— Linux 上交叉构建（electron 提供预编译 arm64 二进制）
+          - { os: ubuntu-latest,  name: linux-arm64, build: '--linux deb --arm64',   ext: deb }
+          # macOS Intel(x64) DMG 安装包 —— macOS 13 (Intel) runner 上构建（出装包必须用 macOS 宿主）
+          - { os: macos-13,       name: mac-x64,     build: '--mac dmg --x64',       ext: dmg }
     defaults:
       run:
         working-directory: deepseek-doll
@@ -45,17 +44,17 @@ jobs:
         run: npm ci
 
       - name: 打包 ${{ matrix.name }}
-        run: npx electron-builder ${{ matrix.build }} -c.directories.output=dist/${{ matrix.name }}
+        run: npx electron-builder ${{ matrix.build }}
 
       - name: 上传构件
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.name }}
-          path: deepseek-doll/dist/${{ matrix.name }}
+          path: deepseek-doll/dist/*.${{ matrix.ext }}
 
-  # 仅当打标签时：把两个平台的包发布为 GitHub Release
+  # 仅当打 deepseek-doll-v* 标签时：把三个平台的包发布为 GitHub Release
   release:
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: startsWith(github.ref, 'refs/tags/deepseek-doll-v')
     needs: build
     runs-on: ubuntu-latest
     steps:
