@@ -34,7 +34,7 @@
         "AppImage"
       ],
       "artifactName": "deepseek-doll-${version}-${arch}.${ext}",
-      "icon": "build/icon.ico",
+      "icon": "build/icon.png",
       "category": "Utility"
     }
   },

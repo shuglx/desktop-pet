@@ -1,0 +1,72 @@
+name: 构建桌宠发布包
+
+# 触发条件：
+#  - 推送到 master：构建两个平台的安装包，作为 Actions 构件存档
+#  - 推送 v* 标签（如 v1.0.1）：额外自动创建 GitHub Release 并附带安装包
+#  - 手动触发：Action 页面点 “Run workflow”
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows x64 便携版 —— 在 Windows 官方 runner 上原生构建
+          - os: windows-latest
+            name: win-x64
+            build: '--win portable --x64'
+          # Linux arm64 (AppImage) —— 在 Linux 上交叉构建（electron 提供预编译 arm64 二进制）
+          - os: ubuntu-latest
+            name: linux-arm64
+            build: '--linux AppImage --arm64'
+    defaults:
+      run:
+        working-directory: deepseek-doll
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: deepseek-doll/package-lock.json
+
+      - name: 安装依赖
+        run: npm ci
+
+      - name: 打包 ${{ matrix.name }}
+        run: npx electron-builder ${{ matrix.build }} -c.directories.output=dist/${{ matrix.name }}
+
+      - name: 上传构件
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: deepseek-doll/dist/${{ matrix.name }}
+
+  # 仅当打标签时：把两个平台的包发布为 GitHub Release
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: 创建 GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" artifacts/* --generate-notes || \
+            echo "Release 已存在或创建失败（可能同名标签），忽略。"
