@@ -58,6 +58,11 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      # gh release create --generate-notes 需要 git 历史来生成更新日志，必须有代码 checkout
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
@@ -67,5 +72,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "${{ github.ref_name }}" artifacts/* --generate-notes || \
-            echo "Release 已存在或创建失败（可能同名标签），忽略。"
+          gh release create "${{ github.ref_name }}" artifacts/* --generate-notes
