@@ -93,4 +93,7 @@ jobs:
       - name: 创建 GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create "${{ github.ref_name }}" artifacts/* --generate-notes
+        run: |
+          # 幂等：tag 重推/重跑时先删掉旧 release（保留 tag），避免残留错误产物
+          gh release delete "${{ github.ref_name }}" --yes || true
+          gh release create "${{ github.ref_name }}" artifacts/* --generate-notes
