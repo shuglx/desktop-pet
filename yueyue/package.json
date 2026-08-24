@@ -1,0 +1,59 @@
+{
+  "name": "yueyue",
+  "version": "1.0.1",
+  "description": "yueyue 独立桌宠",
+  "author": {
+    "name": "shuglx",
+    "email": "jxdalang@163.com"
+  },
+  "homepage": "https://github.com/shuglx/desktop-pet",
+  "main": "main.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win portable",
+    "dist:linux": "electron-builder --linux deb",
+    "dist:mac": "electron-builder --mac dmg"
+  },
+  "build": {
+    "appId": "com.yueyue.desktop-pet",
+    "productName": "yueyue",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        "portable"
+      ]
+    },
+    "portable": {
+      "artifactName": "yueyue-${version}-${arch}.exe"
+    },
+    "linux": {
+      "target": [
+        "deb"
+      ],
+      "artifactName": "yueyue-${version}-${arch}.${ext}",
+      "icon": "build/icon.png",
+      "category": "Utility",
+      "maintainer": "shuglx <jxdalang@163.com>"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "artifactName": "yueyue-${version}-${arch}.${ext}",
+      "category": "public.app-category.utilities"
+    }
+  },
+  "devDependencies": {
+    "electron": "^43.4.1",
+    "electron-builder": "^26.15.3"
+  }
+}
