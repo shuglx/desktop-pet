@@ -18,7 +18,7 @@ permissions:
   contents: write
 
 jobs:
-  # 根据触发来源生成构建矩阵：tag → 只生成前缀对应的组合；分支/手动 → 全部
+  # 根据触发来源生成构建矩阵：tag → 只生成前缀对应的组合；手动 → 全部
   resolve:
     runs-on: ubuntu-latest
     outputs:
@@ -26,21 +26,25 @@ jobs:
     steps:
       - id: set
         run: |
-          # 三平台组合模板：os / 构建参数 / 产物扩展名
-          #   win  x64 便携版（单文件 exe）   —— Windows 官方 runner 原生构建
-          #   linux arm64 deb                —— Linux 交叉构建（electron 有预编译 arm64 二进制）
-          #   mac  x64 DMG                   —— macOS 15 Intel runner（macos-13 已停用）
-          combo='{"win-x64":{"os":"windows-latest","build":"--win portable --x64","ext":"exe"},"linux-arm64":{"os":"ubuntu-latest","build":"--linux deb --arm64","ext":"deb"},"mac-x64":{"os":"macos-15-intel","build":"--mac dmg --x64","ext":"dmg"}}'
+          set -eu
+          # 三平台组合：win x64 便携版 / linux arm64 deb / mac x64 DMG
+          win='"os":"windows-latest","build":"--win portable --x64","ext":"exe"'
+          linux='"os":"ubuntu-latest","build":"--linux deb --arm64","ext":"deb"'
+          mac='"os":"macos-15-intel","build":"--mac dmg --x64","ext":"dmg"'
+          rows() { # $1=project → 输出该桌宠三平台组合（逗号分隔）
+            p="$1"
+            printf '{"project":"%s","name":"win-x64",%s},{"project":"%s","name":"linux-arm64",%s},{"project":"%s","name":"mac-x64",%s}' \
+              "$p" "$win" "$p" "$linux" "$p" "$mac"
+          }
           if [[ "$GITHUB_REF" == refs/tags/deepseek-doll-v* ]]; then
-            projects='["deepseek-doll"]'
+            matrix="[$(rows deepseek-doll)]"
           elif [[ "$GITHUB_REF" == refs/tags/yueyue-v* ]]; then
-            projects='["yueyue"]'
+            matrix="[$(rows yueyue)]"
           else
-            projects='["deepseek-doll","yueyue"]'
+            matrix="[$(rows deepseek-doll),$(rows yueyue)]"
           fi
-          matrix=$(jq -c --argjson projects "$projects" --argjson combo "$combo" \
-            '[ $projects[] as $p | $combo | to_entries[] | {project: $p, name: .key} + .value ]')
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+          echo "resolved matrix: $matrix"
 
   build:
     name: ${{ matrix.project }}/${{ matrix.name }}
