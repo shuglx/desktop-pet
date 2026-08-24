@@ -1,13 +1,12 @@
 name: 构建桌宠发布包
 
 # 触发条件：
-#  - 推送到 master：构建所有桌宠的三平台安装包，作为 Actions 构件存档
-#  - 推送 deepseek-doll-v* / yueyue-v* 标签：按 tag 前缀只构建对应桌宠，
+#  - 仅推送 deepseek-doll-v* / yueyue-v* 标签才构建：按 tag 前缀只构建对应桌宠，
 #    并自动创建 GitHub Release 附带安装包（多桌宠共用本仓库，靠 tag 前缀区分）
-#  - 手动触发：Action 页面点 “Run workflow”
+#  - 手动触发：Action 页面点 “Run workflow”（构建全部桌宠，仅存构件不发 Release）
+#  注意：推送 master 不触发构建
 on:
   push:
-    branches: [master]
     tags: ['deepseek-doll-v*', 'yueyue-v*']
   workflow_dispatch:
 
