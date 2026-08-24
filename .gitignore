@@ -6,14 +6,8 @@ node_modules/
 dist-build/
 
 # 中间产物
-concept-design/
 raw-videos/
-pr/
-step02/
-step03/
-step04/
+processed-videos/
 
 # 工具
-.vscode/
-.idea/
 .tools/
