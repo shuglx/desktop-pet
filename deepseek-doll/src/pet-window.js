@@ -25,6 +25,11 @@
     });
   }
 
+  /* ---------- 托盘“播放动作”：手动播放指定动画 ---------- */
+  if (typeof host.onPlay === 'function') {
+    host.onPlay((name) => pet.playOnce(name));
+  }
+
   /* ---------- 点击穿透切换 ---------- */
   let ignoring = null;   // 当前是否处于穿透态
   const cursor = { x: -1, y: -1 };

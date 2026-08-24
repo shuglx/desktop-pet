@@ -17,6 +17,38 @@ let win = null;
 let tray = null;
 let allowMove = true; // 托盘开关：允许移动（默认开启），关闭时跳过移动动画
 
+/* ---------- 全部动画（与 src/pet/*.webm 一一对应，顺序供托盘“播放动作”菜单展示） ---------- */
+const IDLE = '待机呼吸休闲';
+const TURN = '东张西望';
+const ACTS = [
+  // 日常/互动
+  '超大伸懒腰', '悠闲哼歌', '哈欠连天', '打瞌睡被惊醒', '原地小憩沉眠',
+  '原地专心玩魔方', '原地敲击桌面互动', '原地重力下蹲压缩', '原地跳跃抓碎头顶物品',
+  '原地蹲下玩玩具汽车', '偷吃零食被抓住', '玩游戏气急败坏', '被吓一跳',
+  '小幅度原地360度旋转展示', '鲸鱼吐泡泡特效', '女仆屈膝礼仪', '荡秋千',
+  '骑木马', '抽陀螺', '吹笛子', '踢毽子', '下五子棋', '三球抛接', '凭空生花',
+  '扑克魔术', '撸猫', '萌化小幽灵', '蝴蝶蜜蜂环绕头顶开花', '玩水枪',
+  // 换装 / 休闲
+  '整体换装试色', '照镜子', '优雅女仆舞', '轻快摇摆舞', '可爱宅舞', '吹气球',
+  '摇扇纳凉', '轻快记录',
+  // 吃喝
+  '吃早餐', '吃午餐', '吃晚餐', '吃白饭', '吃冰淇淋融化', '吃西瓜', '大口吃零食',
+  '吃Token', '吃年糕', '吃青团', '吃汤圆', '吃粽子', '吃饺子', '吃糖葫芦',
+  '吃长寿面', '吃重阳糕', '吃大闸蟹', '吃腊八粥', '晨间刷牙',
+  // 节日 / 场景
+  '动物环绕', '深度思考碎碎念', '写代码', '放风筝', '被落叶淹没', '蓝鲸现世',
+  '用鲸鱼尾巴拍打地面', '小提琴演奏', '堆雪人', '中秋赏月吃月饼', '放河灯',
+  '放孔明灯', '放烟花', '变鸽子', '插茱萸赏菊', '穿针乞巧', '拆礼物', '收红包',
+  '写福字', '装点圣诞树', '讨糖南瓜灯', '舞狮头', '涮火锅', '是啊，吃什么',
+];
+const CLICKS = [
+  '点击回应-开心跃动', '点击回应-害羞惊讶', '点击回应-傲娇生气',
+  '点击回应-挠痒咯咯笑', '点击回应-元气挥手',
+];
+const DRAG = '被鼠标拖拽悬空反馈';
+const MOVES = ['螃蟹走路', '原地漂浮踏步', '原地左转奔跑'];
+const ALL_ANIMS = [IDLE, TURN, ...ACTS, ...CLICKS, DRAG, ...MOVES];
+
 /* ---------- 错误日志：任何未捕获异常都写入文件并弹窗，方便定位 ---------- */
 function logPath() {
   const base = process.env.PORTABLE_EXECUTABLE_DIR || app.getPath('userData');
@@ -151,20 +183,29 @@ ipcMain.on('pet:log', (_e, msg) => log('[renderer] ' + msg));
 ipcMain.on('pet:quit', () => app.quit());
 
 /* ---------- 托盘 ---------- */
-function toggleVisible() {
-  if (!win) return;
-  if (win.isVisible()) win.hide();
-  else {
-    win.show();
-    win.setIgnoreMouseEvents(true, { forward: true }); // 显示后先恢复穿透，由渲染层按光标位置切换
-  }
+function playAnim(name) {
+  if (!win || win.isDestroyed()) return;
+  if (!win.isVisible()) win.show(); // 隐藏状态下播放：先显示
+  win.webContents.send('pet:play', name);
 }
 function createTray() {
   tray = new Tray(makeTrayImage());
   tray.setToolTip('DeepSeek Doll 桌宠');
   const menu = Menu.buildFromTemplate([
-    { label: '显示 / 隐藏桌宠', click: toggleVisible },
-    { type: 'separator' },
+    {
+      label: '显示桌宠',
+      type: 'checkbox',
+      checked: true,
+      click: (mi) => {
+        if (!win) return;
+        if (mi.checked) {
+          win.show();
+          win.setIgnoreMouseEvents(true, { forward: true }); // 显示后先恢复穿透，由渲染层按光标位置切换
+        } else {
+          win.hide();
+        }
+      },
+    },
     {
       label: '允许移动',
       type: 'checkbox',
@@ -175,18 +216,24 @@ function createTray() {
         if (win && !win.isDestroyed()) win.webContents.send('pet:allowMove', allowMove);
       },
     },
-    { type: 'separator' },
     {
-      label: '开机自启',
+      label: '开机启动',
       type: 'checkbox',
       checked: app.getLoginItemSettings().openAtLogin,
       click: (mi) => { try { app.setLoginItemSettings({ openAtLogin: mi.checked }); } catch (e) { console.error(e); } },
+    },
+    {
+      label: '播放动作',
+      submenu: ALL_ANIMS.map(name => ({ label: name, click: () => playAnim(name) })),
     },
     { type: 'separator' },
     { label: '退出', click: () => app.quit() },
   ]);
   tray.setContextMenu(menu);
-  tray.on('double-click', toggleVisible);
+  tray.on('double-click', () => {
+    if (win && win.isVisible()) win.hide();
+    else if (win) win.show();
+  });
 }
 
 /* ---------- 生命周期：单实例 + 托盘常驻 ---------- */

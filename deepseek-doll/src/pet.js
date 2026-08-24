@@ -145,7 +145,7 @@ const pet = {
     el.src = 'pet/' + encodeURIComponent(next) + '.webm'; // 独立版：webm 位于 src/pet/
     el.loop = false;            // 链式模型：全部一次性播放
     el.muted = true;
-    el.onended = () => this.handleEnded();
+    el.onended = () => this.handleEnded(el);
 
     const onReady = () => {
       el.removeEventListener('loadeddata', onReady);
@@ -153,6 +153,13 @@ const pet = {
       const old = this.vids[this.front];
       el.classList.add('is-front');
       if (old !== el) old.classList.remove('is-front');
+      // 关键：立即停掉被换下的旧视频。否则它继续在后台播放，
+      // 播完时 ended 事件会在新动画中途触发一次“插播”
+      // （拖拽/点击/菜单播放等中途打断后必然发生）。
+      if (old !== el) {
+        old.onended = null;
+        try { old.pause(); } catch (e) {}
+      }
       this.front = this.front === 0 ? 1 : 0;
       this.pending = null;
       // 朝向镜像用 inline transform（旧视频保持原朝向淡出，不闪）
@@ -178,8 +185,10 @@ const pet = {
     this.switchTo(next, true);
   },
 
-  handleEnded() {
+  handleEnded(el) {
     if (!this.on) return;
+    if (this.pending) return;                       // 已有切换在加载中：忽略
+    if (el && el !== this.vids[this.front]) return; // 过期的 ended（非前台视频）：忽略
     if (this.drag.active) return;              // 拖拽中不打断
     if (this.anim === this.TURN)               // 东张西望播完 → 翻转朝向
       this.facing = this.facing === 'left' ? 'right' : 'left';
@@ -189,6 +198,14 @@ const pet = {
       return;
     }
     this.pickNext();
+  },
+
+  /* ---------- 托盘“播放动作”：手动指定播放一个动画，播完回动画链 ---------- */
+  playOnce(name) {
+    if (!this.on) return;
+    this.stopMove();
+    this.anim = name;
+    this.switchTo(name, true);
   },
 
   /* ---------- 移动系统：动画提供姿态, rAF 驱动位置 ---------- */
@@ -236,6 +253,7 @@ const pet = {
     const token = ++this.moveToken;
     const step = () => {
       if (this.moveToken !== token || !this.on) return;
+      if (el !== this.vids[this.front]) { this.moveId = null; return; } // 移动动画已被换下：停止驱动
       const t = el.currentTime || 0;
       let ratioX;
       if (t <= this.MOVE_LEAD_SEC) ratioX = startRatio;
