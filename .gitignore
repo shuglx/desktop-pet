@@ -8,6 +8,7 @@ dist-build/
 # 中间产物
 raw-videos/
 processed-videos/
+dist/
 
 # 工具
 .tools/
