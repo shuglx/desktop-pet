@@ -5,6 +5,10 @@ name: 构建桌宠发布包
 #    并自动创建 GitHub Release 附带安装包（多桌宠共用本仓库，靠 tag 前缀区分）
 #  - 手动触发：Action 页面点 “Run workflow”（构建全部桌宠，仅存构件不发 Release）
 #  注意：推送 master 不触发构建
+#
+# 实现说明：不用 matrix.project + include 的写法——不匹配的 include 条目会被
+# GitHub Actions 追加为新组合，导致"只想构建 A 却也构建了 B"。改为在 resolve
+# job 里生成完整组合数组，build job 用 matrix.include: fromJson() 整体注入。
 on:
   push:
     tags: ['deepseek-doll-v*', 'yueyue-v*']
@@ -14,21 +18,29 @@ permissions:
   contents: write
 
 jobs:
-  # 根据触发来源决定构建哪些项目：tag → 只构建前缀对应的；分支/手动 → 全部
+  # 根据触发来源生成构建矩阵：tag → 只生成前缀对应的组合；分支/手动 → 全部
   resolve:
     runs-on: ubuntu-latest
     outputs:
-      projects: ${{ steps.set.outputs.projects }}
+      matrix: ${{ steps.set.outputs.matrix }}
     steps:
       - id: set
         run: |
+          # 三平台组合模板：os / 构建参数 / 产物扩展名
+          #   win  x64 便携版（单文件 exe）   —— Windows 官方 runner 原生构建
+          #   linux arm64 deb                —— Linux 交叉构建（electron 有预编译 arm64 二进制）
+          #   mac  x64 DMG                   —— macOS 15 Intel runner（macos-13 已停用）
+          combo='{"win-x64":{"os":"windows-latest","build":"--win portable --x64","ext":"exe"},"linux-arm64":{"os":"ubuntu-latest","build":"--linux deb --arm64","ext":"deb"},"mac-x64":{"os":"macos-15-intel","build":"--mac dmg --x64","ext":"dmg"}}'
           if [[ "$GITHUB_REF" == refs/tags/deepseek-doll-v* ]]; then
-            echo 'projects=["deepseek-doll"]' >> "$GITHUB_OUTPUT"
+            projects='["deepseek-doll"]'
           elif [[ "$GITHUB_REF" == refs/tags/yueyue-v* ]]; then
-            echo 'projects=["yueyue"]' >> "$GITHUB_OUTPUT"
+            projects='["yueyue"]'
           else
-            echo 'projects=["deepseek-doll","yueyue"]' >> "$GITHUB_OUTPUT"
+            projects='["deepseek-doll","yueyue"]'
           fi
+          matrix=$(jq -c --argjson projects "$projects" --argjson combo "$combo" \
+            '[ $projects[] as $p | $combo | to_entries[] | {project: $p, name: .key} + .value ]')
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
   build:
     name: ${{ matrix.project }}/${{ matrix.name }}
@@ -37,17 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: ${{ fromJson(needs.resolve.outputs.projects) }}
-        include:
-          # Windows x64 便携版（单文件 exe，可直接运行）—— Windows 官方 runner 原生构建
-          - { project: deepseek-doll, os: windows-latest, name: win-x64,     build: '--win portable --x64',  ext: exe }
-          # Linux arm64 deb 安装包 —— Linux 上交叉构建（electron 提供预编译 arm64 二进制）
-          - { project: deepseek-doll, os: ubuntu-latest,  name: linux-arm64, build: '--linux deb --arm64',   ext: deb }
-          # macOS Intel(x64) DMG 安装包 —— macOS 15 Intel runner（macos-13 已被 GitHub 停用）
-          - { project: deepseek-doll, os: macos-15-intel, name: mac-x64,     build: '--mac dmg --x64',       ext: dmg }
-          - { project: yueyue,        os: windows-latest, name: win-x64,     build: '--win portable --x64',  ext: exe }
-          - { project: yueyue,        os: ubuntu-latest,  name: linux-arm64, build: '--linux deb --arm64',   ext: deb }
-          - { project: yueyue,        os: macos-15-intel, name: mac-x64,     build: '--mac dmg --x64',       ext: dmg }
+        include: ${{ fromJson(needs.resolve.outputs.matrix) }}
     defaults:
       run:
         working-directory: ${{ matrix.project }}
