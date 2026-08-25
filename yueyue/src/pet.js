@@ -12,7 +12,7 @@ const pet = {
     '小动作-偷吃零食被抓住', '小动作-悠闲哼歌', '小动作-整体换装试色',
     '小动作-晨间刷牙', '小动作-超大伸懒腰',
     // 玩耍
-    '玩耍-优雅女仆舞', '玩耍-动物环绕', '玩耍-原地蹲下玩玩具汽',
+    '玩耍-优雅女仆舞', '玩耍-动物环绕', '玩耍-原地蹲下玩玩具汽车',
     '玩耍-玩水枪', '玩耍-荡秋千', '玩耍-蝴蝶蜜蜂环绕头顶开花',
     '玩耍-骑木马',
     // 吃什么
@@ -139,6 +139,11 @@ const pet = {
     el.loop = false;            // 链式模型：全部一次性播放
     el.muted = true;
     el.onended = () => this.handleEnded(el);
+    // 加载失败兜底：清掉 pending，否则动画链会永久卡死在最后一帧
+    el.onerror = () => {
+      el.onerror = null;
+      if (this.pending && this.pending.gen === gen) this.pending = null;
+    };
 
     const onReady = () => {
       el.removeEventListener('loadeddata', onReady);

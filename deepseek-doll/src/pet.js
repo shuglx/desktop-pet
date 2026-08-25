@@ -146,6 +146,11 @@ const pet = {
     el.loop = false;            // 链式模型：全部一次性播放
     el.muted = true;
     el.onended = () => this.handleEnded(el);
+    // 加载失败兜底：清掉 pending，否则动画链会永久卡死在最后一帧
+    el.onerror = () => {
+      el.onerror = null;
+      if (this.pending && this.pending.gen === gen) this.pending = null;
+    };
 
     const onReady = () => {
       el.removeEventListener('loadeddata', onReady);
