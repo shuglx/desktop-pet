@@ -1,0 +1,60 @@
+{
+  "name": "cyberpunk-lucy",
+  "version": "1.0.0",
+  "description": "cyberpunk-lucy 独立桌宠",
+  "author": {
+    "name": "shuglx",
+    "email": "jxdalang@163.com"
+  },
+  "homepage": "https://github.com/shuglx/desktop-pet",
+  "main": "main.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win portable",
+    "dist:linux": "electron-builder --linux deb",
+    "dist:mac": "electron-builder --mac dmg"
+  },
+  "build": {
+    "appId": "com.cyberpunklucy.desktop-pet",
+    "productName": "cyberpunk-lucy",
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "icon": "build/icon.png",
+      "target": [
+        "portable"
+      ]
+    },
+    "portable": {
+      "artifactName": "cyberpunk-lucy-${version}-${arch}.exe"
+    },
+    "linux": {
+      "target": [
+        "deb"
+      ],
+      "artifactName": "cyberpunk-lucy-${version}-${arch}.${ext}",
+      "icon": "build/icon.png",
+      "category": "Utility",
+      "maintainer": "shuglx <jxdalang@163.com>"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "artifactName": "cyberpunk-lucy-${version}-${arch}.${ext}",
+      "icon": "build/icon.png",
+      "category": "public.app-category.utilities"
+    }
+  },
+  "devDependencies": {
+    "electron": "^43.4.1",
+    "electron-builder": "^26.15.3"
+  }
+}

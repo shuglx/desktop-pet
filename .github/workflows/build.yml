@@ -1,8 +1,8 @@
 name: 构建桌宠发布包
 
 # 触发条件：
-#  - 仅推送 deepseek-doll-v* / yueyue-v* 标签才构建：按 tag 前缀只构建对应桌宠，
-#    并自动创建 GitHub Release 附带安装包（多桌宠共用本仓库，靠 tag 前缀区分）
+#  - 仅推送 deepseek-doll-v* / yueyue-v* / cyberpunk-lucy-v* 标签才构建：
+#    按 tag 前缀只构建对应桌宠，并自动创建 GitHub Release 附带安装包（多桌宠共用本仓库，靠 tag 前缀区分）
 #  - 手动触发：Action 页面点 “Run workflow”（构建全部桌宠，仅存构件不发 Release）
 #  注意：推送 master 不触发构建
 #
@@ -11,7 +11,7 @@ name: 构建桌宠发布包
 # job 里生成完整组合数组，build job 用 matrix.include: fromJson() 整体注入。
 on:
   push:
-    tags: ['deepseek-doll-v*', 'yueyue-v*']
+    tags: ['deepseek-doll-v*', 'yueyue-v*', 'cyberpunk-lucy-v*']
   workflow_dispatch:
 
 permissions:
@@ -40,8 +40,10 @@ jobs:
             matrix="[$(rows deepseek-doll)]"
           elif [[ "$GITHUB_REF" == refs/tags/yueyue-v* ]]; then
             matrix="[$(rows yueyue)]"
+          elif [[ "$GITHUB_REF" == refs/tags/cyberpunk-lucy-v* ]]; then
+            matrix="[$(rows cyberpunk-lucy)]"
           else
-            matrix="[$(rows deepseek-doll),$(rows yueyue)]"
+            matrix="[$(rows deepseek-doll),$(rows yueyue),$(rows cyberpunk-lucy)]"
           fi
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
           echo "resolved matrix: $matrix"
@@ -80,7 +82,7 @@ jobs:
 
   # 打 deepseek-doll-v* / yueyue-v* 标签时：把对应桌宠三平台的包发布为 GitHub Release
   release:
-    if: startsWith(github.ref, 'refs/tags/deepseek-doll-v') || startsWith(github.ref, 'refs/tags/yueyue-v')
+    if: startsWith(github.ref, 'refs/tags/deepseek-doll-v') || startsWith(github.ref, 'refs/tags/yueyue-v') || startsWith(github.ref, 'refs/tags/cyberpunk-lucy-v')
     needs: build
     runs-on: ubuntu-latest
     steps:
