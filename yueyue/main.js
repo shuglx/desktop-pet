@@ -57,16 +57,23 @@ process.on('uncaughtException', (err) => {
 const FREEZE = process.env.PET_FREEZE === '1' || process.argv.includes('--freeze');
 
 /* ---------- 托盘图标：优先使用 src/logo.png，加载失败回退代码绘制 ---------- */
+// macOS 菜单栏图标：按标准尺寸提供 1x(16px)/2x(32px) 模板图，系统自动按深浅色渲染
+function makeMacTrayImage() {
+  const img = nativeImage.createEmpty();
+  const one = nativeImage.createFromPath(path.join(__dirname, 'src', 'logo-mac.png'));
+  const two = nativeImage.createFromPath(path.join(__dirname, 'src', 'logo-mac@2x.png'));
+  if (!one.isEmpty()) img.addRepresentation({ scaleFactor: 1, buffer: one.toPNG() });
+  if (!two.isEmpty()) img.addRepresentation({ scaleFactor: 2, buffer: two.toPNG() });
+  if (img.isEmpty()) throw new Error('no mac tray representation');
+  img.setTemplateImage(true);
+  return img;
+}
 function makeTrayImage() {
   try {
-    // macOS 菜单栏用模板图（单色剪影），系统按深浅色自动渲染白/黑；Windows/Linux 保持彩色 logo 不变
-    const file = process.platform === 'darwin' ? 'logo-mac.png' : 'logo.png';
-    const img = nativeImage.createFromPath(path.join(__dirname, 'src', file));
-    if (!img.isEmpty() && img.getSize().width > 0) {
-      const resized = img.resize({ width: 32, height: 32 });
-      if (process.platform === 'darwin') resized.setTemplateImage(true);
-      return resized;
-    }
+    // macOS 菜单栏用模板图（按 1x/2x 双档位，避免过大/发糊）；Windows/Linux 保持彩色 logo 不变
+    if (process.platform === 'darwin') return makeMacTrayImage();
+    const img = nativeImage.createFromPath(path.join(__dirname, 'src', 'logo.png'));
+    if (!img.isEmpty() && img.getSize().width > 0) return img.resize({ width: 32, height: 32 });
   } catch (e) { log('tray logo load failed: ' + e.message); }
   const S = 32;
   const buf = Buffer.alloc(S * S * 4);
