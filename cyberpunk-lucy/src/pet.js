@@ -26,6 +26,12 @@ const pet = {
   ],
   DRAG: '24-拖拽·悬空吊起反应',
   MOVES: ['19-移动-横向行走·都会漫步', '20-移动-横向奔跑·任务急行'],
+  // 移动素材的内在朝向（素材本身向左/向右移动的方向）。移动时按“内在朝向 + 实际
+  // 横移方向”决定是否镜像，保证人物脸朝向与移动方向一致（如行走素材朝右、奔跑朝左）。
+  MOVE_INTRINSIC: {
+    '19-移动-横向行走·都会漫步': 'right',
+    '20-移动-横向奔跑·任务急行': 'left',
+  },
 
   // thumb 画布 640x360，人物脚底在 y=330；命中矩形（人物区域）
   CANVAS_H: 360, FEET_Y: 330,
@@ -158,8 +164,16 @@ const pet = {
       }
       this.front = this.front === 0 ? 1 : 0;
       this.pending = null;
-      // 朝向镜像用 inline transform（旧视频保持原朝向淡出，不闪）
-      el.style.transform = this.facing === 'right' ? 'scaleX(-1)' : '';
+      // 朝向镜像用 inline transform（旧视频保持原朝向淡出，不闪）。
+      // 移动视频: 按“素材内在朝向 + 实际横移方向”翻转，让人物脸朝向与移动方向一致；
+      // 其余动画: 按 this.facing 统一镜像。
+      let flip = this.facing === 'right';
+      const pm = this.pendingMove; // 注意: 下方 startMoveDrive 会清掉 pendingMove，此处需先读
+      if (pm && this.MOVE_INTRINSIC[this.anim]) {
+        const dir = pm.dir > 0 ? 'right' : 'left';
+        flip = this.MOVE_INTRINSIC[this.anim] !== dir;
+      }
+      el.style.transform = flip ? 'scaleX(-1)' : '';
       el.play().catch(() => {});
       if (this.pendingMove) this.startMoveDrive(el);
     };
