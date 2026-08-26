@@ -59,8 +59,14 @@ const FREEZE = process.env.PET_FREEZE === '1' || process.argv.includes('--freeze
 /* ---------- 托盘图标：优先使用 src/logo.png，加载失败回退代码绘制 ---------- */
 function makeTrayImage() {
   try {
-    const img = nativeImage.createFromPath(path.join(__dirname, 'src', 'logo.png'));
-    if (!img.isEmpty() && img.getSize().width > 0) return img.resize({ width: 32, height: 32 });
+    // macOS 菜单栏用模板图（单色剪影），系统按深浅色自动渲染白/黑；Windows/Linux 保持彩色 logo 不变
+    const file = process.platform === 'darwin' ? 'logo-mac.png' : 'logo.png';
+    const img = nativeImage.createFromPath(path.join(__dirname, 'src', file));
+    if (!img.isEmpty() && img.getSize().width > 0) {
+      const resized = img.resize({ width: 32, height: 32 });
+      if (process.platform === 'darwin') resized.setTemplateImage(true);
+      return resized;
+    }
   } catch (e) { log('tray logo load failed: ' + e.message); }
   const S = 32;
   const buf = Buffer.alloc(S * S * 4);
