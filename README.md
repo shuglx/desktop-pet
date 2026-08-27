@@ -27,13 +27,46 @@
 
 | 桌宠 | 说明 | 类型 | 版本 |
 | --- | --- | --- | --- |
-| 🌃 **cyberpunk-lucy**（露西） | 赛博朋克系：潜入/战斗/月球漫步/数据流等 26 个动作 | 🎨 自制 | [v1.0.2](https://github.com/shuglx/desktop-pet/releases/tag/cyberpunk-lucy-v1.0.2) |
-| 🐰 **yueyue**（小玥儿） | 日常陪伴系：吃喝/玩耍/时节/点击回应等多语义动作 | 🎨 自制 | [v1.0.8](https://github.com/shuglx/desktop-pet/releases/tag/yueyue-v1.0.8) |
-| 🌊 **DeepSeek Doll** | 蓝鲸系萌宠：100+ 动作素材，换装/吃喝/节日/魔法特效齐全 | 🔌 移植 | [v1.0.6](https://github.com/shuglx/desktop-pet/releases/tag/deepseek-doll-v1.0.6) |
+| **cyberpunk-lucy**（露西） | 赛博朋克系：潜入/战斗/月球漫步/数据流等 26 个动作 | 🎨 自制 | [v1.0.2](https://github.com/shuglx/desktop-pet/releases/tag/cyberpunk-lucy-v1.0.2) |
+| **yueyue**（小玥儿） | 日常陪伴系：吃喝/玩耍/时节/点击回应等多语义动作 | 🎨 自制 | [v1.0.8](https://github.com/shuglx/desktop-pet/releases/tag/yueyue-v1.0.8) |
+| **DeepSeek Doll** | 蓝鲸系萌宠：100+ 动作素材，换装/吃喝/节日/魔法特效齐全 | 🔌 移植 | [v1.0.6](https://github.com/shuglx/desktop-pet/releases/tag/deepseek-doll-v1.0.6) |
 
 > 💡 **DeepSeek Doll** 的动画素材移植自 [PC2005-cloud/dsh-pet](https://github.com/PC2005-cloud/dsh-pet)（MIT）。其余两只桌宠（cyberpunk-lucy / yueyue）为仓库自制。
 
 > 🎞️ 所有桌宠的透明 `.mov` 素材，均经 ffmpeg 转码为 640×360 的 VP9 透明 webm，由电子渲染层播放。
+
+---
+
+## 🎬 效果预览
+
+以下 GIF 为各桌宠代表性动作的透明预览（320×180，9/16）。透明部分显示为页面底色，实际 webm 素材播放时全透明。
+
+### cyberpunk-lucy
+
+| 待机 | 点击回应 | 小憩 |
+| --- | --- | --- |
+| ![待机呼吸](cyberpunk-lucy/assets/preview/01-待机呼吸-基准待机.gif) | ![别扭害羞](cyberpunk-lucy/assets/preview/05-点击回应-别扭害羞.gif) | ![低重力漂浮睡](cyberpunk-lucy/assets/preview/10-小憩-低重力漂浮睡.gif) |
+| ![望月转身](cyberpunk-lucy/assets/preview/03-待机-待机·望月转身.gif) | ![摸头反应](cyberpunk-lucy/assets/preview/08-点击回应-摸头反应.gif) | ![深潜梦魇](cyberpunk-lucy/assets/preview/11-小憩-深潜梦魇.gif) |
+
+| 特殊 | 移动 | 战斗 | 拖拽 |
+| --- | --- | --- | --- |
+| ![月球漫步](cyberpunk-lucy/assets/preview/12-特殊-月球漫步低-重力轻跳.gif) | ![横向行走](cyberpunk-lucy/assets/preview/19-移动-横向行走·都会漫步.gif) | ![黑客骇入](cyberpunk-lucy/assets/preview/22-战斗·黑客骇入攻击.gif) | ![悬空吊起](cyberpunk-lucy/assets/preview/24-拖拽·悬空吊起反应.gif) |
+| ![数据流环绕](cyberpunk-lucy/assets/preview/15-特殊-数据流环绕.gif) | | |
+
+### yueyue
+
+| 吃什么 | 小动作 | 待机 & 转向 |
+| --- | --- | --- |
+| ![吃晚餐](yueyue/assets/preview/吃什么-吃晚餐.gif) | ![超大伸懒腰](yueyue/assets/preview/小动作-超大伸懒腰.gif) | ![待机呼吸休闲](yueyue/assets/preview/待机&转向-待机呼吸休闲.gif) |
+| | | ![东张西望](yueyue/assets/preview/待机&转向-东张西望.gif) |
+
+| 玩耍 | 点击回应 | 移动 | 春节 |
+| --- | --- | --- | --- |
+| ![优雅女仆舞](yueyue/assets/preview/玩耍-优雅女仆舞.gif) | ![元气挥手](yueyue/assets/preview/点击回应-元气挥手.gif) | ![原地漂浮踏步](yueyue/assets/preview/移动-原地漂浮踏步.gif) | ![放烟花](yueyue/assets/preview/春节-放烟花.gif) |
+
+| 拖拽 |
+| --- |
+| ![悬空反馈](yueyue/assets/preview/拖拽-悬空反馈.gif) |
 
 ---
 
