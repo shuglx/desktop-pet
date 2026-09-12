@@ -108,6 +108,22 @@ npm run dist:mac   # 打包 macOS dmg
 
 ---
 
+## 🍎 macOS 版本说明
+
+从 GitHub Release 下载的 macOS 安装包（dmg）在当前构建流程下**未做 Apple 签名与公证**，打开时 macOS 可能提示 **“已损坏，无法打开，你应该将它移到废纸篓”**。这属于 **Gatekeeper 检疫拦截**，并非安装包损坏——macOS 对所有来自网络下载、且没有 Apple Developer 签名的应用都会这样提示，与芯片架构（Intel/Apple Silicon）无关。
+
+**解决办法**：挂载 dmg 并将 App 拖入「应用程序」后，在终端执行（`xxx` 换成对应 App 名，如 `yueyue`）：
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/xxx.app"
+```
+
+然后正常双击打开即可。也可以：右键（Control+点击）App 图标 → 选「打开」→ 在弹窗中点击「打开」放行。
+
+本仓库安装包未包含 Apple Developer 证书，因此分发均需按上述步骤放行一次；Windows / Linux 版本没有此限制。
+
+---
+
 ## 📄 许可
 
 [MIT](LICENSE) — DeepSeek Doll 动画素材另见 [PC2005-cloud/dsh-pet](https://github.com/PC2005-cloud/dsh-pet) 的许可。
