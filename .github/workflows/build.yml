@@ -3,7 +3,7 @@ name: 构建桌宠发布包
 # 触发条件：
 #  - 仅推送 deepseek-doll-v* / yueyue-v* / cyberpunk-lucy-v* 标签才构建：
 #    按 tag 前缀只构建对应桌宠，并自动创建 GitHub Release 附带安装包（多桌宠共用本仓库，靠 tag 前缀区分）
-#  - 手动触发：Action 页面点 “Run workflow”（构建全部桌宠，仅存构件不发 Release）
+#   - 手动触发：Action 页面点 “Run workflow”（构建全部桌宠，仅存构件不发 Release）
 #  注意：推送 master 不触发构建
 #
 # 实现说明：不用 matrix.project + include 的写法——不匹配的 include 条目会被
@@ -27,14 +27,15 @@ jobs:
       - id: set
         run: |
           set -eu
-          # 三平台组合：win x64 便携版 / linux arm64 deb / mac x64 DMG
+          # 四平台组合：win x64 便携版 / linux arm64 deb / mac x64 / mac arm64 DMG
           win='"os":"windows-latest","build":"--win portable --x64","ext":"exe"'
           linux='"os":"ubuntu-latest","build":"--linux deb --arm64","ext":"deb"'
-          mac='"os":"macos-15-intel","build":"--mac dmg --x64","ext":"dmg"'
-          rows() { # $1=project → 输出该桌宠三平台组合（逗号分隔）
+          macx='"os":"macos-15-intel","build":"--mac dmg --x64","ext":"dmg"'
+          maca='"os":"macos-15-arm64","build":"--mac dmg --arm64","ext":"dmg"'
+          rows() { # $1=project → 输出该桌宠四平台组合（逗号分隔）
             p="$1"
-            printf '{"project":"%s","name":"win-x64",%s},{"project":"%s","name":"linux-arm64",%s},{"project":"%s","name":"mac-x64",%s}' \
-              "$p" "$win" "$p" "$linux" "$p" "$mac"
+            printf '{"project":"%s","name":"win-x64",%s},{"project":"%s","name":"linux-arm64",%s},{"project":"%s","name":"mac-x64",%s},{"project":"%s","name":"mac-arm64",%s}' \
+              "$p" "$win" "$p" "$linux" "$p" "$macx" "$p" "$maca"
           }
           if [[ "$GITHUB_REF" == refs/tags/deepseek-doll-v* ]]; then
             matrix="[$(rows deepseek-doll)]"
