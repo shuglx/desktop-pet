@@ -102,7 +102,7 @@ npm run dist:mac   # 打包 macOS dmg
 
 推送形如 `cyberpunk-lucy-v1.2.3` 的 **tag** 即自动触发 [GitHub Actions](.github/workflows/build.yml)：
 
-- 构建 **Windows 便携版** / **Linux deb** / **macOS dmg（Intel x64 与 Apple Silicon arm64）** 安装包
+- 构建 **Windows 便携版** / **Linux deb** / **macOS dmg（Apple Silicon arm64）** 安装包
 - 自动创建关联的 **GitHub Release** 并附上安装包
 - 多桌宠共用本仓库，按 tag 前缀（`deepseek-doll-` / `yueyue-` / `cyberpunk-lucy-`）区分构建目标
 

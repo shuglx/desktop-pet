@@ -27,15 +27,14 @@ jobs:
       - id: set
         run: |
           set -eu
-          # 四平台组合：win x64 便携版 / linux arm64 deb / mac x64 / mac arm64 DMG
+          # 三平台组合：win x64 便携版 / linux arm64 deb / mac arm64 (Apple Silicon) DMG
           win='"os":"windows-latest","build":"--win portable --x64","ext":"exe"'
           linux='"os":"ubuntu-latest","build":"--linux deb --arm64","ext":"deb"'
-          macx='"os":"macos-15-intel","build":"--mac dmg --x64","ext":"dmg"'
           maca='"os":"macos-15-arm64","build":"--mac dmg --arm64","ext":"dmg"'
-          rows() { # $1=project → 输出该桌宠四平台组合（逗号分隔）
+          rows() { # $1=project → 输出该桌宠三平台组合（逗号分隔）
             p="$1"
-            printf '{"project":"%s","name":"win-x64",%s},{"project":"%s","name":"linux-arm64",%s},{"project":"%s","name":"mac-x64",%s},{"project":"%s","name":"mac-arm64",%s}' \
-              "$p" "$win" "$p" "$linux" "$p" "$macx" "$p" "$maca"
+            printf '{"project":"%s","name":"win-x64",%s},{"project":"%s","name":"linux-arm64",%s},{"project":"%s","name":"mac-arm64",%s}' \
+              "$p" "$win" "$p" "$linux" "$p" "$maca"
           }
           if [[ "$GITHUB_REF" == refs/tags/deepseek-doll-v* ]]; then
             matrix="[$(rows deepseek-doll)]"
