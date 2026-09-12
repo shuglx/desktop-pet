@@ -27,9 +27,9 @@
 
 | 桌宠 | 说明 | 类型 | 版本 |
 | --- | --- | --- | --- |
-| **cyberpunk-lucy**（露西） | 赛博朋克系：潜入/战斗/月球漫步/数据流等 26 个动作 | 🎨 自制 | [v1.0.2](https://github.com/shuglx/desktop-pet/releases/tag/cyberpunk-lucy-v1.0.2) |
-| **yueyue**（小玥儿） | 日常陪伴系：吃喝/玩耍/时节/点击回应等多语义动作 | 🎨 自制 | [v1.0.8](https://github.com/shuglx/desktop-pet/releases/tag/yueyue-v1.0.8) |
-| **DeepSeek Doll** | 蓝鲸系萌宠：100+ 动作素材，换装/吃喝/节日/魔法特效齐全 | 🔌 移植 | [v1.0.6](https://github.com/shuglx/desktop-pet/releases/tag/deepseek-doll-v1.0.6) |
+| **cyberpunk-lucy**（露西） | 赛博朋克系：潜入/战斗/月球漫步/数据流等 26 个动作 | 🎨 自制 | [v1.0.4](https://github.com/shuglx/desktop-pet/releases/tag/cyberpunk-lucy-v1.0.4) |
+| **yueyue**（小玥儿） | 日常陪伴系：吃喝/玩耍/时节/点击回应等多语义动作 | 🎨 自制 | [v1.0.10](https://github.com/shuglx/desktop-pet/releases/tag/yueyue-v1.0.10) |
+| **DeepSeek Doll** | 蓝鲸系萌宠：100+ 动作素材，换装/吃喝/节日/魔法特效齐全 | 🔌 移植 | [v1.0.8](https://github.com/shuglx/desktop-pet/releases/tag/deepseek-doll-v1.0.8) |
 
 > 💡 **DeepSeek Doll** 的动画素材移植自 [PC2005-cloud/dsh-pet](https://github.com/PC2005-cloud/dsh-pet)（MIT）。其余两只桌宠（cyberpunk-lucy / yueyue）为仓库自制。
 
