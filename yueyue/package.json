@@ -49,7 +49,9 @@
         "dmg"
       ],
       "artifactName": "yueyue-${version}-${arch}.${ext}",
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "identity": "-",
+      "hardenedRuntime": false
     }
   },
   "devDependencies": {

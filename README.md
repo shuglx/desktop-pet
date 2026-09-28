@@ -120,8 +120,6 @@ xattr -dr com.apple.quarantine "/Applications/xxx.app"
 
 然后正常双击打开即可。也可以：右键（Control+点击）App 图标 → 选「打开」→ 在弹窗中点击「打开」放行。
 
-本仓库安装包未包含 Apple Developer 证书，因此分发均需按上述步骤放行一次；Windows / Linux 版本没有此限制。
-
 ---
 
 ## 📄 许可

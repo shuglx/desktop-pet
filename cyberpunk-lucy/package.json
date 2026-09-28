@@ -50,7 +50,9 @@
       ],
       "artifactName": "cyberpunk-lucy-${version}-${arch}.${ext}",
       "icon": "build/icon.png",
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "identity": "-",
+      "hardenedRuntime": false
     }
   },
   "devDependencies": {
